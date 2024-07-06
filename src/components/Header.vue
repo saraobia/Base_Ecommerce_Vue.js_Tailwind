@@ -1,11 +1,17 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import axiosInstance from '@/axiosInstance';
+
+
 
 const router = useRouter();
 const isDropdownOpen = ref(false);
+const isConfirmLogoutOpen = ref(false);
 const name = localStorage.getItem('name');
 const cartCount = ref(0);
+const idClient = localStorage.getItem('idClient');
+const idCart = localStorage.getItem('idCart');
 
 const updateCartCount = () => {
   cartCount.value = parseInt(localStorage.getItem('cartCount') || '0');
@@ -15,13 +21,54 @@ const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value;
 };
 
-const exitAndRemoveData = () => {
+const confirmLogout = () => {
+  isConfirmLogoutOpen.value = true;
+};
+
+const cancelLogout = () => {
+  isConfirmLogoutOpen.value = false;
+};
+
+const removeCart = async (idCart, idClient) => {
+  try {
+    console.log('Attempting to remove cart with:', { idCart, idClient });
+    if (!idCart || !idClient) {
+      console.error('idClient or idCart is null or undefined:', { idClient, idCart });
+      idClient = '';
+      idCart = '';
+      return;
+    }
+
+    await axiosInstance.delete(`cart/${idCart}/${idClient}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+      }
+    });
+
+    console.log('Cart removed:', idCart);
+
+    localStorage.setItem('cartCount', 0);
+    // Trigger storage event
+    window.dispatchEvent(new Event('storage'));
+  } catch (error) {
+    console.error('Error removing cart:', error);
+  }
+};
+
+const exitAndRemoveData = async () => {
+  const currentIdCart = localStorage.getItem('idCart');
+  const currentIdClient = localStorage.getItem('idClient');
+  console.log(currentIdCart, currentIdClient)
+  await removeCart(currentIdCart, currentIdClient);
+
   localStorage.removeItem('accessToken');
   localStorage.removeItem('idClient');
+  localStorage.removeItem('idCart');
   localStorage.removeItem('name');
   localStorage.removeItem('surname');
   localStorage.removeItem('email');
   localStorage.removeItem('cartCount');
+
   router.push({ name: 'login' });
 };
 
@@ -50,7 +97,7 @@ watch(() => localStorage.getItem('cartCount'), updateCartCount);
 
 <template>
   <header>
-    <nav class="fixed w-screen  flex py-4 px-4 justify-between items-center bg-background text-white">
+    <nav class="fixed w-screen flex py-4 px-4 justify-between items-center bg-background text-white">
       <ul class="flex justify-center items-center mt-1">
         <li class="font-black text-primary">
           <RouterLink name="home" to="/home">
@@ -60,13 +107,15 @@ watch(() => localStorage.getItem('cartCount'), updateCartCount);
       </ul>
 
       <ul class="flex justify-center items-center">
-        <li class="relative">
-          <font-awesome-icon :icon="['fas', 'cart-shopping']" />
-          <span v-if="cartCount > 0"
-            class="absolute -top-3 -right-4 bg-primary text-white rounded-full px-2 py-1 text-xs font-bold">
-            {{ cartCount }}
-          </span>
-        </li>
+        <RouterLink name="cart" to="/cart">
+          <li class="relative">
+            <font-awesome-icon :icon="['fas', 'cart-shopping']" />
+            <span v-if="cartCount > 0"
+              class="absolute -top-3 -right-4 bg-primary text-white rounded-full px-2 py-1 text-xs font-bold">
+              {{ cartCount }}
+            </span>
+          </li>
+        </RouterLink>
         <li class="px-2">
           <button @click="toggleDropdown" class="dropdown-button flex items-center">
             <font-awesome-icon :icon="['fas', 'user']" class="px-2" />
@@ -81,7 +130,7 @@ watch(() => localStorage.getItem('cartCount'), updateCartCount);
                 <RouterLink name="home" to="/home">Back to home</RouterLink>
               </li>
               <li class="p-2 cursor-pointer hover:bg-hoverLight hover:rounded-md">
-                <button @click="exitAndRemoveData">Logout</button>
+                <button @click="confirmLogout">Logout</button>
               </li>
             </ul>
           </div>
@@ -89,4 +138,16 @@ watch(() => localStorage.getItem('cartCount'), updateCartCount);
       </ul>
     </nav>
   </header>
+
+  <!-- Confirm Logout Popup -->
+  <div v-if="isConfirmLogoutOpen"
+    class="fixed inset-0 flex items-center justify-center z-50 bg-background bg-opacity-85">
+    <div class="bg-card p-6 rounded-lg shadow-lg">
+      <p class="text-white mb-4">If you log out, your cart will be deleted. Do you really want to log out?</p>
+      <div class="flex justify-end">
+        <button @click="cancelLogout" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Continue</button>
+        <button @click="exitAndRemoveData" class="bg-red-500 text-white px-4 py-2 rounded">Logout</button>
+      </div>
+    </div>
+  </div>
 </template>
