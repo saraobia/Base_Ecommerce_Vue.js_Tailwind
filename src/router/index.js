@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
 import Login from '../views/Login.vue';
-import Orders from '../views/Orders.vue';
-import Buy from '../views/Buy.vue';
+import OrdersHistory from '../views/OrdersHistory.vue';
+import Order from '../views/Order.vue';
 import Page404 from '../views/Page404.vue';
-import ArticleDetails from '../views/ArticleDetails.vue';
+import SinglePage from '../views/SinglePage.vue';
 import Cart from '../views/Cart.vue';
 
 import NoHeaderFooterLayout from '../layouts/NoHeaderFooterLayout.vue';
@@ -24,21 +24,21 @@ const routes = [
     meta: { requiresAuth: true, layout: 'DefaultLayout' }, // Layout per questa rotta
   },
   {
-    path: '/orders',
-    name: 'orders',
-    component: Orders,
+    path: '/orders-history',
+    name: 'ordersHistory',
+    component: OrdersHistory,
     meta: { requiresAuth: true, layout: 'DefaultLayout' }, // Layout per questa rotta
   },
   {
-    path: '/buy',
-    name: 'buy',
-    component: Buy,
+    path: '/order/:id',
+    name: 'order',
+    component: Order,
     meta: { requiresAuth: true, layout: 'DefaultLayout' }, // Layout per questa rotta
   },
   {
     path: '/article/:id',
-    name: 'articleDetails',
-    component: ArticleDetails,
+    name: 'SinglePage',
+    component: SinglePage,
     meta: { requiresAuth: true, layout: 'DefaultLayout' },
   },
   {

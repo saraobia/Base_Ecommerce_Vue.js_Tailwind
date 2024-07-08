@@ -2,6 +2,9 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axiosInstance from '@/axiosInstance';
+import { useCart } from '@/composable/cart';
+
+const { addToCart, updateCartCount } = useCart();
 
 const route = useRoute();
 const router = useRouter();
@@ -35,24 +38,21 @@ const addArticleToCart = async () => {
       return;
     }
 
-    const response = await axiosInstance.post(`cart/${idClient}/${idArticle}/${quantity.value}`, {}, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
-    });
+    const response = await addToCart(idClient, idArticle, quantity.value);
 
-    if (response.status === 200) {
+    if (response && response.status === 200) {
       localStorage.setItem('idCart', response.data);
-      console.log(response.data);
 
-      // Increment cart count
-      let cartCount = parseInt(localStorage.getItem('cartCount') || '0');
-      cartCount += quantity.value;
-      localStorage.setItem('cartCount', cartCount.toString());
-      // Trigger storage event
+      // Aggiorna il conteggio del carrello nel localStorage
+      let currentCartCount = parseInt(localStorage.getItem('cartCount') || '0');
+      currentCartCount += quantity.value;
+      localStorage.setItem('cartCount', currentCartCount.toString());
+
+      // Aggiorna il conteggio del carrello nel composable
+      updateCartCount();
+
+      // Trigger storage event per aggiornare altri componenti
       window.dispatchEvent(new Event('storage'));
-
-
 
       // Redirect to cart page after adding item to cart
       router.push('/cart');
@@ -63,6 +63,7 @@ const addArticleToCart = async () => {
 };
 
 onMounted(fetchArticleDetails);
+updateCartCount();
 </script>
 
 <template>
@@ -80,15 +81,9 @@ onMounted(fetchArticleDetails);
       <div class="flex items-center mb-4">
         <label for="quantity" class="mr-2">Quantity:</label>
         <input id="quantity" type="number" v-model="quantity" min="1" :max="article.availableQuantity"
-          class="text-black p-1 w-16 text-center" />
+          class="bg-background p-1 w-16 text-center" />
       </div>
       <button @click="addArticleToCart" class="bg-primary text-white py-2 px-4 rounded">Add to Cart</button>
     </div>
   </div>
 </template>
-
-<style scoped>
-.article-details {
-  padding: 20px;
-}
-</style>

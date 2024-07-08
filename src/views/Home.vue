@@ -4,7 +4,6 @@ import axiosInstance from '@/axiosInstance';
 import { useRouter } from 'vue-router';
 import CardArticle from '../components/CardArticle.vue';
 
-
 const accessToken = localStorage.getItem('accessToken');
 const email = localStorage.getItem('email');
 const showMessage = ref(false);
@@ -13,6 +12,7 @@ const router = useRouter();
 const loading = ref(true);
 const articles = ref([]);
 
+//GET CLIENT
 const fetchClient = async () => {
   try {
     if (!accessToken) {
@@ -44,7 +44,7 @@ const fetchClient = async () => {
   }
 };
 
-
+// GET ARTICLES
 const fetchArticles = async () => {
   try {
     if (!accessToken) {
@@ -75,7 +75,6 @@ const fetchArticles = async () => {
 };
 onMounted(fetchArticles);
 onMounted(fetchClient);
-
 </script>
 
 

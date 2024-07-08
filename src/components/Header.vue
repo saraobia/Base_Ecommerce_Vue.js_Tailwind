@@ -1,21 +1,14 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import axiosInstance from '@/axiosInstance';
+import { useCart } from '@/composable/cart';
 
-
+const { cartCount, updateCartCount, removeCart } = useCart();
 
 const router = useRouter();
 const isDropdownOpen = ref(false);
 const isConfirmLogoutOpen = ref(false);
 const name = localStorage.getItem('name');
-const cartCount = ref(0);
-const idClient = localStorage.getItem('idClient');
-const idCart = localStorage.getItem('idCart');
-
-const updateCartCount = () => {
-  cartCount.value = parseInt(localStorage.getItem('cartCount') || '0');
-};
 
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value;
@@ -29,45 +22,16 @@ const cancelLogout = () => {
   isConfirmLogoutOpen.value = false;
 };
 
-const removeCart = async (idCart, idClient) => {
-  try {
-    console.log('Attempting to remove cart with:', { idCart, idClient });
-    if (!idCart || !idClient) {
-      console.error('idClient or idCart is null or undefined:', { idClient, idCart });
-      idClient = '';
-      idCart = '';
-      return;
-    }
-
-    await axiosInstance.delete(`cart/${idCart}/${idClient}`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-      }
-    });
-
-    console.log('Cart removed:', idCart);
-
-    localStorage.setItem('cartCount', 0);
-    // Trigger storage event
-    window.dispatchEvent(new Event('storage'));
-  } catch (error) {
-    console.error('Error removing cart:', error);
-  }
-};
-
 const exitAndRemoveData = async () => {
   const currentIdCart = localStorage.getItem('idCart');
   const currentIdClient = localStorage.getItem('idClient');
-  console.log(currentIdCart, currentIdClient)
+  console.log(currentIdCart, currentIdClient);
   await removeCart(currentIdCart, currentIdClient);
 
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('idClient');
-  localStorage.removeItem('idCart');
-  localStorage.removeItem('name');
-  localStorage.removeItem('surname');
-  localStorage.removeItem('email');
-  localStorage.removeItem('cartCount');
+  // REMOVE LOCAL STORAGE DETAIL
+  ['accessToken', 'idClient', 'idCart', 'name', 'surname', 'email', 'cartCount'].forEach(item => {
+    localStorage.removeItem(item);
+  });
 
   router.push({ name: 'login' });
 };
@@ -91,8 +55,9 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
   window.removeEventListener('storage', updateCartCount);
 });
-
+// MANAGE LOCAL STORAGE CHANGE
 watch(() => localStorage.getItem('cartCount'), updateCartCount);
+
 </script>
 
 <template>

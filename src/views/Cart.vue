@@ -1,10 +1,15 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import axiosInstance from '@/axiosInstance';
+import { useCart } from '@/composable/cart';
+import { useRouter } from 'vue-router';
 
+const { removeCartItem, createOrderFromCart } = useCart();
 const cartItems = ref([]);
 const idClient = localStorage.getItem('idClient');
+const router = useRouter();
 
+// GET CART ARTICLES
 const fetchCartItems = async () => {
   try {
     const response = await axiosInstance.get(`cart/client/${idClient}`, {
@@ -13,34 +18,28 @@ const fetchCartItems = async () => {
       }
     });
     cartItems.value = response.data;
-    console.log(response.data);
   } catch (error) {
     console.error('Error fetching cart items:', error);
   }
 };
-
+//REMOVE ARTICLE FROM CART
 const removeItem = async (idCart, idArticle) => {
   try {
-    await axiosInstance.delete(`cart/${idCart}/article/${idArticle}`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-      }
-    });
-    let cartCount = parseInt(localStorage.getItem('cartCount') || '0');
-    cartCount = Math.max(cartCount - 1, 0); // Ensure it doesn't go below 0
-    localStorage.setItem('cartCount', cartCount.toString());
-
-    // Trigger storage event
-    window.dispatchEvent(new Event('storage'));
-
+    await removeCartItem(idCart, idArticle);
     await fetchCartItems(); // Refresh cart after removal
   } catch (error) {
     console.error('Error removing item:', error);
   }
 };
-
-const createOrder = async () => {
-  // Implementa la logica per creare l'ordine
+// CREATE ORDER
+const createOrder = async (idCart) => {
+  try {
+    const idOrder = await createOrderFromCart(idCart);
+    await fetchCartItems();
+    router.push({ name: 'order', params: { id: idOrder } });
+  } catch (error) {
+    console.error('Error creating order');
+  }
 };
 
 const isCartEmpty = computed(() => {
@@ -90,7 +89,8 @@ onMounted(fetchCartItems);
           </div>
           <div v-if="cart.cartArticles.length > 0" class="flex flex-col items-end mx-6">
             <p class="text-md font-medium mb-2 text-right">Total Price: ${{ cart.totalPrice }}</p>
-            <button @click="createOrder()"
+
+            <button @click="createOrder(cart.idCart)"
               class="font-bold text-sm bg-primary text-white px-4 py-2 rounded-xl hover:shadow-inner-strong">
               Confirm
             </button>

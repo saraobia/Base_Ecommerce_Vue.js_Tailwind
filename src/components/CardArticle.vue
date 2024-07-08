@@ -1,7 +1,7 @@
 <script setup>
 import { defineProps } from 'vue';
 import { useRouter } from 'vue-router';
-import axiosInstance from '@/axiosInstance';
+import { useCart } from '@/composable/cart';
 
 const props = defineProps({
   article: {
@@ -10,13 +10,11 @@ const props = defineProps({
   }
 });
 
-const accessToken = localStorage.getItem('accessToken');
-const idClient = localStorage.getItem('idClient');
-
 const router = useRouter();
+const { addToCart } = useCart();
 
 const navigateToDetails = () => {
-  router.push({ name: 'articleDetails', params: { id: props.article.idArticle } });
+  router.push({ name: 'SinglePage', params: { id: props.article.idArticle } });
 };
 
 const addArticleToCart = async (event) => {
@@ -29,26 +27,10 @@ const addArticleToCart = async (event) => {
       router.push('/');
       return;
     }
-    const response = await axiosInstance.post(`cart/${idClient}/${props.article.idArticle}/1`, {}, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
-    });
 
-    if (response.status === 200) {
-      // Increment cart count
-      let cartCount = parseInt(localStorage.getItem('cartCount') || '0');
-      cartCount++;
-      localStorage.setItem('cartCount', cartCount.toString());
-
-      localStorage.setItem('idCart', response.data);
-      console.log(response.data);
-
-      // Trigger storage event
-      window.dispatchEvent(new Event('storage'));
-    }
+    await addToCart(idClient, props.article.idArticle, 1);
   } catch (error) {
-    console.error('Error with post:', error);
+    console.error('Error adding to cart:', error);
   }
 };
 </script>
