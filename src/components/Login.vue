@@ -18,10 +18,10 @@ const handleSubmit = async () => {
       password: password.value
     });
 
-    console.log(email.value);
-    console.log(password.value);
+    // console.log(email.value);
+    // console.log(password.value);
     const accessToken = response.data;
-    console.log(accessToken);
+    // console.log(accessToken);
 
     if (!accessToken) {
       throw new Error('Access token not present in the response.');

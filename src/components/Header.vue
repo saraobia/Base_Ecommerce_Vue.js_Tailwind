@@ -15,7 +15,12 @@ const toggleDropdown = () => {
 };
 
 const confirmLogout = () => {
-  isConfirmLogoutOpen.value = true;
+  const cartCount = localStorage.getItem('cartCount')
+  if (cartCount >= 1) {
+    isConfirmLogoutOpen.value = true;
+  } else {
+    exitAndRemoveData();
+  }
 };
 
 const cancelLogout = () => {
@@ -62,7 +67,7 @@ watch(() => localStorage.getItem('cartCount'), updateCartCount);
 
 <template>
   <header>
-    <nav class="fixed w-screen flex py-4 px-4 justify-between items-center bg-background text-white">
+    <nav class="fixed w-screen flex py-4 px-4 justify-between items-center bg-background text-white z-50">
       <ul class="flex justify-center items-center mt-1">
         <li class="font-black text-primary">
           <RouterLink name="home" to="/home">
@@ -89,7 +94,7 @@ watch(() => localStorage.getItem('cartCount'), updateCartCount);
             <ul class="bg-card flex flex-col items-center justify-center w-full h-full p-4 text-sm text-darkGray">
               <li class="font-black text-primary mb-2"> Welcome {{ name }}</li>
               <li class="p-2 cursor-pointer hover:bg-hoverLight hover:rounded-md">
-                <RouterLink name="prenotations" to="/prenotations">Order</RouterLink>
+                <RouterLink name="orders-history" to="/orders-history">My Orders</RouterLink>
               </li>
               <li class="p-2 cursor-pointer hover:bg-hoverLight hover:rounded-md">
                 <RouterLink name="home" to="/home">Back to home</RouterLink>
