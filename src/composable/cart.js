@@ -1,5 +1,9 @@
 import { ref } from 'vue';
 import axiosInstance from '@/axiosInstance';
+import useAuth from '@/composable/useAuth';
+
+const { checkAccessToken } = useAuth();
+const accessToken = localStorage.getItem('accessToken');
 
 export function useCart() {
   const cartCount = ref(parseInt(localStorage.getItem('cartCount') || '0'));
@@ -10,7 +14,10 @@ export function useCart() {
 
   const removeCart = async (idCart, idClient) => {
     try {
-      console.log('Attempting to remove cart with:', { idCart, idClient });
+      if (!checkAccessToken(accessToken)) {
+        return;
+      }
+
       if (!idCart || !idClient) {
         console.error('idClient or idCart is null or undefined:', {
           idClient,
@@ -24,9 +31,6 @@ export function useCart() {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
-
-      console.log('Cart removed:', idCart);
-
       localStorage.setItem('cartCount', '0');
       updateCartCount();
     } catch (error) {
@@ -36,6 +40,9 @@ export function useCart() {
 
   const addToCart = async (idClient, idArticle, quantity) => {
     try {
+      if (!checkAccessToken(accessToken)) {
+        return;
+      }
       const response = await axiosInstance.post(
         `cart/${idClient}/${idArticle}/${quantity}`,
         {},
@@ -55,14 +62,21 @@ export function useCart() {
 
         // Trigger storage event to update other components
         window.dispatchEvent(new Event('storage'));
+      } else if (response.status === 400) {
+        throw new Error('Insufficient quantity available');
       }
+      return response;
     } catch (error) {
       console.error('Error adding to cart:', error);
+      throw error;
     }
   };
 
   const removeCartItem = async (idCart, idArticle) => {
     try {
+      if (!checkAccessToken(accessToken)) {
+        return;
+      }
       await axiosInstance.delete(`cart/${idCart}/article/${idArticle}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -83,9 +97,8 @@ export function useCart() {
 
   const createOrderFromCart = async (idCart) => {
     try {
-      const token = localStorage.getItem('accessToken');
-      if (!token) {
-        throw new Error('Access token is missing');
+      if (!checkAccessToken(accessToken)) {
+        return;
       }
 
       const response = await axiosInstance.post(
@@ -98,7 +111,6 @@ export function useCart() {
         }
       );
 
-      console.log('Order created:', response.data);
       localStorage.setItem('idCart', ''); // Reset idCart in localStorage
       localStorage.setItem('cartCount', '0');
       updateCartCount();

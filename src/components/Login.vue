@@ -17,11 +17,7 @@ const handleSubmit = async () => {
       email: email.value,
       password: password.value
     });
-
-    // console.log(email.value);
-    // console.log(password.value);
     const accessToken = response.data;
-    // console.log(accessToken);
 
     if (!accessToken) {
       throw new Error('Access token not present in the response.');
@@ -85,8 +81,6 @@ const handleLoginError = (error) => {
             </svg>
           </div>
         </div>
-
-        <!-- <h2 class="text-xl font-extrabold text-center text-primary mb-6">Login</h2> -->
 
         <!-- FORM -->
         <form @submit.prevent="handleSubmit">

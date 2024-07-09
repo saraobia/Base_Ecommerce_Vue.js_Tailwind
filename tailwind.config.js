@@ -15,7 +15,7 @@ export default {
       customPrenotation: '500px',
       bigSmartphone: '680px',
       tablet: '780px',
-      laptop: '900px',
+      laptop: '1000px',
       desktop: '1280px',
     },
     colors: {
@@ -27,7 +27,8 @@ export default {
       white: '#f9f9f9',
 
       tGray: '#cccccc',
-      tMiddle: '#333333',
+      tDarkGray: '#7a7a7a',
+      tMiddle: '#474747',
       tDark: '#181818',
 
       warning: '#e3b02f',
@@ -35,6 +36,7 @@ export default {
     },
     boxShadow: {
       'inner-strong': 'inset 0 2px 4px 2px rgba(0, 0, 0, 0.2)',
+      strong: '2px 4px 2px rgba(0, 0, 0, 0.8)',
     },
   },
 };

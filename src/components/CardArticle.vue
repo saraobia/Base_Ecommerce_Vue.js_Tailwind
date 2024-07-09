@@ -33,24 +33,38 @@ const addArticleToCart = async (event) => {
     console.error('Error adding to cart:', error);
   }
 };
+
+const formatPrice = (price) => {
+  return parseFloat(price).toFixed(2);
+};
+
+
 </script>
 
 <template>
   <div @click="navigateToDetails"
     class="card bg-card rounded-2xl text-white w-80 h-104 flex flex-col items-center justify-center cursor-pointer hover:scale-105 transition-transform duration-300 ease-in-out">
-    <div class="w-36">
-      <img :src="article.imagePath" :alt="article.nameArticle" class=" mb-4">
+    <!-- HEADER CARD -->
+    <div class="mb-8 text-center">
+      <h2 class="text-xl font-bold mb-1">{{ article.nameArticle }}</h2>
+      <p class="text-tDarkGray text-sm">{{ article.feature }}</p>
+    </div>
+
+    <!-- IMG -->
+    <div class="mb-8">
+      <img :src="article.imagePath" :alt="article.nameArticle" class="h-36">
     </div>
     <div class="w-56">
-      <h2 class="text-xl font-bold mb-2">{{ article.nameArticle }}</h2>
-      <p class="text-tGray text-sm mb-4">{{ article.description }}</p>
-      <div class="flex justify-between items-center">
-        <span class="text-lg font-semibold text-green-600">${{ article.price }}</span>
-        <span class="text-sm text-tGray">Quantity Available: {{ article.availableQuantity }}</span>
+      <div class="mb-4 text-center">
+        <p class="text-sm">$<span class="text-lg font-bold text-tGray">{{ formatPrice(article.price) }}</span></p>
       </div>
-      <button @click="addArticleToCart"
-        class="text-sm font-bold bg-primary px-4 py-3 rounded-xl w-full mt-4 hover:shadow-inner-strong">Add to
-        cart</button>
+      <div class="flex items-center justify-between">
+
+        <button @click="addArticleToCart"
+          class="text-sm w-full font-bold bg-primary px-6 py-3 rounded-3xl hover:shadow-inner-strong ">Add to
+          cart</button>
+      </div>
+
     </div>
   </div>
 </template>

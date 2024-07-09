@@ -4,8 +4,11 @@ import moment from 'moment';
 import { useRoute, useRouter } from 'vue-router';
 import axiosInstance from '@/axiosInstance';
 import PaymentForm from '@/components/PaymentForm.vue';
+import useAuth from '@/composable/useAuth';
 
-const isLoading = ref(false); // Inizialmente false
+const { showMessage, countdown, checkAccessToken } = useAuth();
+
+const isLoading = ref(false);
 const isContentVisible = ref(true);
 
 const route = useRoute();
@@ -54,12 +57,10 @@ const formattedOrderDate = computed(() => {
 // GET ORDER
 const fetchOrder = async () => {
   try {
-    if (!accessToken) {
-      handleMissingAccessToken();
+    if (!checkAccessToken(accessToken)) {
       return;
     }
     const idOrder = route.params.id;
-    console.log(idOrder)
     const response = await axiosInstance.get(`order/${idOrder}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
@@ -83,19 +84,16 @@ const fetchOrder = async () => {
 const cancelOrder = async () => {
   try {
     isLoading.value = true;
-    if (!accessToken) {
-      handleMissingAccessToken();
+    if (!checkAccessToken(accessToken)) {
       return;
     }
     const idOrder = route.params.id;
-    console.log(idOrder)
     await axiosInstance.patch(`state/${idOrder}`,
       {}, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
       }
     });
-    console.log("status changed");
     showMessageForAnnulled.value = true;
     annulledMessage.value = 'Order canceled successfully!';
   } catch (error) {
@@ -112,22 +110,17 @@ const confirmOrder = () => {
   showPaymentForm.value = true;
 }
 
-// MISSING ACCESS TOKEN
-const handleMissingAccessToken = () => {
-  showMessage.value = true;
-  const interval = setInterval(() => {
-    countdown.value--;
-    if (countdown.value === 0) {
-      clearInterval(interval);
-      router.push('/');
-    }
-  }, 1000);
-};
-
 onMounted(fetchOrder);
 </script>
 
 <template>
+  <!-- ERROR MESSAGE -->
+  <div v-if="showMessage" class="absolute z-50 inset-0 flex items-center justify-center backdrop-blur-lg">
+    <div class="bg-card p-12 rounded-lg shadow-inner-strong text-white">
+      <p class="text-md text-center font-bold text-warning">Session expired. Redirecting...</p>
+      <p class="text-center text-xs text-tGray">Returning to homepage in {{ countdown }} seconds</p>
+    </div>
+  </div>
 
   <div v-if="isContentVisible">
     <div class="py-20 flex flex-col items-center justify-center text-white">
@@ -204,10 +197,10 @@ onMounted(fetchOrder);
   <div v-else-if="isLoading" class="h-screen flex items-center justify-center">
     <div class="text-center flex items-center justify-center">
       <svg class="h-8 w-8" viewBox="0 0 24 24">
-        <circle class="animate-pulse" cx="12" cy="12" r="10" stroke="#61a4ad" stroke-width="4" fill="#07575b">
+        <circle class="animate-pulse" cx="12" cy="12" r="10" stroke="#6aebc8" stroke-width="4" fill="#27C499">
         </circle>
       </svg>
-      <p class="text-middle mx-1 font-extrabold text-center">Loading</p>
+      <p class="text-white mx-1 font-extrabold text-center">Loading</p>
     </div>
   </div>
 

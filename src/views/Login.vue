@@ -8,7 +8,6 @@ const router = useRouter();
 
 
 const manageLogin = () => {
-  console.log(accessToken);
   if (accessToken !== null) {
     router.push('/home');
   }

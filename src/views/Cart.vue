@@ -3,21 +3,28 @@ import { ref, onMounted, computed } from 'vue';
 import axiosInstance from '@/axiosInstance';
 import { useCart } from '@/composable/cart';
 import { useRouter } from 'vue-router';
+import useAuth from '@/composable/useAuth';
 
+const { showMessage, countdown, checkAccessToken } = useAuth();
 const { removeCartItem, createOrderFromCart } = useCart();
 const cartItems = ref([]);
 const idClient = localStorage.getItem('idClient');
+const accessToken = localStorage.getItem('accessToken');
 const router = useRouter();
 
 // GET CART ARTICLES
 const fetchCartItems = async () => {
   try {
+    if (!checkAccessToken(accessToken)) {
+      return;
+    }
     const response = await axiosInstance.get(`cart/client/${idClient}`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
       }
     });
     cartItems.value = response.data;
+    console.log(cartItems.value);
   } catch (error) {
     console.error('Error fetching cart items:', error);
   }
@@ -25,6 +32,9 @@ const fetchCartItems = async () => {
 //REMOVE ARTICLE FROM CART
 const removeItem = async (idCart, idArticle) => {
   try {
+    // if (!checkAccessToken(accessToken)) {
+    //   return;
+    // }
     await removeCartItem(idCart, idArticle);
     await fetchCartItems(); // Refresh cart after removal
   } catch (error) {
@@ -34,6 +44,9 @@ const removeItem = async (idCart, idArticle) => {
 // CREATE ORDER
 const createOrder = async (idCart) => {
   try {
+    // if (!checkAccessToken(accessToken)) {
+    //   return;
+    // }
     const idOrder = await createOrderFromCart(idCart);
     await fetchCartItems();
     router.push({ name: 'order', params: { id: idOrder } });
@@ -46,11 +59,23 @@ const isCartEmpty = computed(() => {
   return cartItems.value.length === 0 || cartItems.value[0].cartArticles.length === 0;
 });
 
+const formatPrice = (price) => {
+  return parseFloat(price).toFixed(2);
+};
+
 onMounted(fetchCartItems);
 </script>
 
 <template>
-  <div class="text-white h-full pt-24">
+  <!-- ERROR MESSAGE -->
+  <div v-if="showMessage" class="absolute z-50 inset-0 flex items-center justify-center backdrop-blur-lg">
+    <div class="bg-card p-12 rounded-lg shadow-inner-strong text-white">
+      <p class="text-md text-center font-bold text-warning">Session expired. Redirecting...</p>
+      <p class="text-center text-xs text-tGray">Returning to homepage in {{ countdown }} seconds</p>
+    </div>
+  </div>
+
+  <div class="text-white py-24 ">
     <div class="flex flex-col justify-center items-center">
       <h1 class="text-2xl font-bold mb-4">Your Cart</h1>
       <!-- NO CART FOR CLIENT -->
@@ -69,7 +94,7 @@ onMounted(fetchCartItems);
                   <img :src="item.article.imagePath" :alt="item.article.nameArticle" class="w-36 h-26 p-3 mr-6">
                   <div class="details">
                     <h3 class="text-md font-semibold">{{ item.article.nameArticle }}</h3>
-                    <p class="text-xs text-tMiddle">{{ item.article.description }}</p>
+                    <p class="text-xs text-tMiddle">{{ item.article.feature }}</p>
                     <p class="mt-4 text-xs text-tGray">Price: ${{ item.article.price }}</p>
                     <p class="text-xs text-tGray">Available in store: {{ item.article.availableQuantity }}</p>
                     <p class="text-xs text-tGray">Quantity ordered: {{ item.quantity }}</p>
@@ -79,7 +104,7 @@ onMounted(fetchCartItems);
                 <div class="flex mt-2 justify-end w-full">
                   <div class="flex justify-center items-center">
                     <button @click="removeItem(cart.idCart, item.article.idArticle)"
-                      class="bg-danger text-sm text-white px-4 py-2 rounded-xl hover:shadow-inner-strong">
+                      class="bg-danger text-sm text-white px-4 py-2 rounded-full hover:shadow-inner-strong">
                       Remove
                     </button>
                   </div>
@@ -88,10 +113,10 @@ onMounted(fetchCartItems);
             </div>
           </div>
           <div v-if="cart.cartArticles.length > 0" class="flex flex-col items-end mx-6">
-            <p class="text-md font-medium mb-2 text-right">Total Price: ${{ cart.totalPrice }}</p>
+            <p class="text-md font-medium mb-2 text-right">Total Price: ${{ formatPrice(cart.totalPrice) }}</p>
 
             <button @click="createOrder(cart.idCart)"
-              class="font-bold text-sm bg-primary text-white px-4 py-2 rounded-xl hover:shadow-inner-strong">
+              class="font-bold text-sm bg-primary text-white px-4 py-2 rounded-full hover:shadow-inner-strong">
               Confirm
             </button>
           </div>
