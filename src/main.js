@@ -15,6 +15,8 @@ import {
   faEllipsis,
   faShoppingCart,
   faUser,
+  faMinus,
+  faPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import {
   faPaypal,
@@ -39,7 +41,9 @@ library.add(
   faCaretDown,
   faEllipsis,
   faShoppingCart,
-  faUser
+  faUser,
+  faMinus,
+  faPlus
 );
 
 const app = createApp(App);

@@ -46,13 +46,13 @@ const formatPrice = (price) => {
     class="card bg-card rounded-2xl text-white w-80 h-104 flex flex-col items-center justify-center cursor-pointer hover:scale-105 transition-transform duration-300 ease-in-out">
     <!-- HEADER CARD -->
     <div class="mb-8 text-center">
-      <h2 class="text-xl font-bold mb-1">{{ article.nameArticle }}</h2>
+      <h2 class="text-xl font-bold mb-1">{{ article.name }}</h2>
       <p class="text-tDarkGray text-sm">{{ article.feature }}</p>
     </div>
 
     <!-- IMG -->
     <div class="mb-8">
-      <img :src="article.imagePath" :alt="article.nameArticle" class="h-36">
+      <img :src="article.imagePath" :alt="article.name" class="h-36">
     </div>
     <div class="w-56">
       <div class="mb-4 text-center">

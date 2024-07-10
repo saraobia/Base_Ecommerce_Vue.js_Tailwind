@@ -126,7 +126,7 @@ updateCartCount();
 </script>
 
 <template>
-  <div class="flex items-center justify-center py-24 text-white">
+  <div class="flex items-center justify-center h-full text-white">
     <!-- ERROR MESSAGE -->
     <div v-if="showMessage" class="absolute z-50 inset-0 flex items-center justify-center backdrop-blur-lg">
       <div class="bg-card p-12 rounded-lg shadow-inner-strong text-white">
@@ -148,43 +148,52 @@ updateCartCount();
 
     <!-- CARD -->
     <div v-else class="flex flex-col items-center">
-      <div class="w-96 p-10 rounded-xl flex flex-col justify-center items-center tablet:flex-row tablet:w-256">
-        <img class="w-48 mb-8 tablet:w-80 tablet:mb-0 tablet:px-10" :src="article.imagePath"
-          :alt="article.nameArticle" />
+      <div
+        class="w-96 p-10 rounded-xl flex flex-col justify-center items-center tablet:flex-row tablet:w-200 tablet:pl-0">
+
+        <img class="w-48 mb-8 tablet:w-80 tablet:mb-0 tablet:px-10" :src="article.imagePath" :alt="article.name" />
         <div class="">
-          <h1 class="text-4xl font-bold mb-4">{{ article.nameArticle }}</h1>
+          <h1 class="text-4xl font-bold mb-4">{{ article.name }}</h1>
           <p class="mb-1 text-tGray"><span class="font-bold">Features:</span> {{ article.feature }}</p>
           <p class="mb-10 text-tDarkGray text-sm"><span class="font-bold">Description:</span>{{ article.description }}
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet necessitatibus nobis nisi delectus
             expedita, voluptatum explicabo deserunt! Laboriosam, temporibus magnam. Dicta ipsa harum minus fugiat?
           </p>
-          <p class="mb-1 text-tGray">Price: ${{ formatPrice(article.price * quantity) }}</p>
-          <p class="mb-8 text-tGray">Available Quantity: {{ article.availableQuantity }}</p>
-          <div class="flex items-center justify-end mb-4">
-            <label for="quantity" class="mr-2">Quantity:</label>
-            <div class="flex items-center bg-background rounded-lg overflow-hidden">
-              <button @click="decrementQuantity" class="p-2 text-white hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                  <path fill-rule="evenodd"
-                    d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM7.5 12a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 017.5 12Z"
-                    clip-rule="evenodd" />
-                </svg>
-              </button>
-              <input type="number" v-model="quantity" @input="updateQuantity" min="1" :max="article.availableQuantity"
-                class="w-10 text-center font-bold bg-background focus:outline-none  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
-              <button @click="incrementQuantity"
-                class="p-2 text-primary hover:bg-primary hover:text-white transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                  <path fill-rule="evenodd"
-                    d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9Z"
-                    clip-rule="evenodd" />
-                </svg>
-              </button>
+          <div class=" flex flex-col tablet:flex-row justify-between">
+            <div class="">
+              <p class="mb-1 text-tGray">Price: ${{ formatPrice(article.price * quantity) }}</p>
+              <p class="mb-16 text-tGray tablet:mb-0">Available Quantity: {{ article.availableQuantity }}</p>
+            </div>
+
+            <!-- QUANTITY -->
+            <div class="flex flex-col items-end mb-8">
+              <label for="quantity" class="mb-2 mr-1 text-sm text-tMiddle">Select quantity</label>
+
+              <div class="mb-4 bg-card flex items-center rounded-lg tablet:mb-0 ">
+                <!-- MINUS -->
+                <button @click="decrementQuantity"
+                  class="w-8 h-8 rounded-md  text-tGray shadow-inner-strong hover:text-primary">
+                  <font-awesome-icon class="" :icon="['fas', 'minus']" />
+                </button>
+
+                <!-- NUMBER -->
+                <input type="number" v-model="quantity" @input="updateQuantity" min="1" :max="article.availableQuantity"
+                  class="w-10 text-center text-lg font-bold bg-card focus:outline-none  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+
+                <!-- PLUS -->
+                <button @click="incrementQuantity"
+                  class="w-8 h-8 text-tGray rounded-md  hover:text-primary shadow-inner-strong ">
+                  <font-awesome-icon :icon="['fas', 'plus']" />
+                </button>
+
+              </div>
             </div>
           </div>
-          <div class="w-full flex justify-end">
+
+          <!-- ADD TO CART -->
+          <div class="w-full  flex justify-end">
             <button @click="addArticleToCart"
-              class="bg-primary text-white py-2 px-4 rounded-xl font-bold mx-2 hover:shadow-inner-strong">
+              class="bg-primary text-white py-2 px-8 rounded-full font-bold hover:shadow-inner-strong">
               Add to Cart
             </button>
           </div>
