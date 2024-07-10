@@ -30,8 +30,7 @@
 
         <!-- FOOTER LOGO -->
         <div class="flex items-center mb-4">
-          <font-awesome-icon :icon="['fas', 'plane-departure']" class="h-6 w-6 text-middle mr-2" />
-          <span class="font-extrabold text-middle uppercase">Airline.co</span>
+          <span class="font-extrabold text-middle">ETech</span>
         </div>
       </div>
 
@@ -49,10 +48,9 @@
         </a>
       </div>
 
-
       <!-- FOOTER COPYRIGHT -->
       <div class="text-sm text-darkGray">
-        &copy; 2024 Airline.co. All rights reserved.
+        &copy; 2024 ETech All rights reserved.
       </div>
     </div>
   </footer>

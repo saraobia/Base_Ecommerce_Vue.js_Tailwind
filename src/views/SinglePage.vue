@@ -126,7 +126,7 @@ updateCartCount();
 </script>
 
 <template>
-  <div class="flex items-center justify-center h-full text-white">
+  <div class="flex items-center justify-center min-h-full text-white py-10">
     <!-- ERROR MESSAGE -->
     <div v-if="showMessage" class="absolute z-50 inset-0 flex items-center justify-center backdrop-blur-lg">
       <div class="bg-card p-12 rounded-lg shadow-inner-strong text-white">

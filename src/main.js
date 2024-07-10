@@ -17,6 +17,7 @@ import {
   faUser,
   faMinus,
   faPlus,
+  faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 import {
   faPaypal,
@@ -43,7 +44,8 @@ library.add(
   faShoppingCart,
   faUser,
   faMinus,
-  faPlus
+  faPlus,
+  faTimes
 );
 
 const app = createApp(App);

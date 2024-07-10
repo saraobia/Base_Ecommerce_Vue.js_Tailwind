@@ -100,7 +100,7 @@ const handleLoginError = (error) => {
           <div class="flex items-center justify-end">
 
             <button type="submit"
-              class="text-sm font-bold w-32 bg-primary text-white py-3 rounded-xl drop-shadow-2xl hover:bg-middle focus:outline-none">
+              class="text-sm font-bold w-32 bg-primary text-white py-3 rounded-full drop-shadow-2xl hover:bg-middle focus:outline-none">
               Login
             </button>
           </div>

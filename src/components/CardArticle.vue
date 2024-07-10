@@ -52,7 +52,7 @@ const formatPrice = (price) => {
 
     <!-- IMG -->
     <div class="mb-8">
-      <img :src="article.imagePath" :alt="article.name" class="h-36">
+      <img :src="article.imagePath" :alt="article.name" class="h-32">
     </div>
     <div class="w-56">
       <div class="mb-4 text-center">

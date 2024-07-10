@@ -66,44 +66,44 @@ const handleMissingAccessToken = () => {
     <form @submit.prevent="handleSubmitPayment">
       <!-- TYPE OF PAYMENT -->
       <div class="mb-8 text-sm">
-        <label for="payment" class="text-lightGray font-semibold">Select the type of payment:</label>
+        <label for="payment" class="text-tDarkGray font-medium">Select the type of payment:</label>
 
         <div class="grid grid-cols-2 gap-2 mt-2 text-darkGray">
           <!-- CREDIT CARD -->
           <div @click="selectPayment('CREDIT_CARD')"
-            :class="{ 'bg-card shadow-inner-strong text-white': payment === 'CREDIT_CARD', 'bg-': payment !== 'CREDIT_CARD' }"
-            class="p-4 flex items-center justify-center rounded-lg cursor-pointer focus:outline-none hover:bg-primary">
+            :class="{ 'bg-primary shadow-inner-strong text-white': payment === 'CREDIT_CARD', 'bg-': payment !== 'CREDIT_CARD' }"
+            class="bg-card shadow-inner-strong  px-3 py-3 flex items-center justify-center rounded-lg cursor-pointer focus:outline-none hover:bg-primary">
             <font-awesome-icon :icon="['fas', 'credit-card']" class="text-xl text-icon-gray" />
             <span class="ml-2">Credit card</span>
           </div>
 
           <!-- PAYPAL -->
           <div @click="selectPayment('PAYPAL')"
-            :class="{ 'bg-card shadow-inner-strong text-white': payment === 'PAYPAL', 'bg-card': payment !== 'PAYPAL' }"
-            class="p-4 flex items-center justify-center cursor-pointer rounded-lg focus:outline-none hover:bg-primary">
+            :class="{ 'bg-primary text-white': payment === 'PAYPAL', 'bg-card': payment !== 'PAYPAL' }"
+            class="bg-card shadow-inner-strong px-3 py-3 flex items-center justify-center cursor-pointer rounded-lg focus:outline-none hover:bg-primary">
             <font-awesome-icon :icon="['fab', 'paypal']" class="text-xl text-icon-gray" />
             <span class="ml-2">PayPal</span>
           </div>
 
           <!-- GOOGLE PAY -->
           <div @click="selectPayment('GOOGLE_PAY')"
-            :class="{ 'bg-card shadow-inner-strong text-white': payment === 'GOOGLE_PAY', 'bg-card': payment !== 'GOOGLE_PAY' }"
-            class="p-4 flex items-center justify-center cursor-pointer rounded-lg focus:outline-none hover:bg-primary">
+            :class="{ 'bg-primary text-white': payment === 'GOOGLE_PAY', 'bg-card': payment !== 'GOOGLE_PAY' }"
+            class="bg-card shadow-inner-strong px-3 py-3 flex items-center justify-center cursor-pointer rounded-lg focus:outline-none hover:bg-primary">
             <font-awesome-icon :icon="['fab', 'google-pay']" class="text-xl text-icon-gray" />
             <span class="ml-2 items-center">Google pay</span>
           </div>
 
           <!-- BANK TRANSFER -->
           <div @click="selectPayment('BANK_TRANSFER')"
-            :class="{ 'bg-card shadow-inner-strong text-white': payment === 'BANK_TRANSFER', 'bg-card': payment !== 'BANK_TRANSFER' }"
-            class="p-4 flex items-center justify-center rounded-lg cursor-pointer focus:outline-none hover:bg-primary active:bg-primary">
+            :class="{ 'bg-primary text-white': payment === 'BANK_TRANSFER', 'bg-card': payment !== 'BANK_TRANSFER' }"
+            class="bg-card shadow-inner-strong px-3 py-3 flex items-center justify-center rounded-lg cursor-pointer focus:outline-none hover:bg-primary active:bg-primary">
             <font-awesome-icon :icon="['fas', 'money-bill-transfer']" />
-            <span class="ml-2">Bank transfer</span>
+            <span class="ml-2">Bank transf</span>
           </div>
         </div>
         <div class="flex justify-end w-full">
           <button @click="handleSubmitPayment"
-            class="mt-4 font-bold text-sm bg-primary text-white px-4 py-2 rounded-xl active:bg-primary"
+            class="mt-4 font-bold text-sm bg-primary text-white px-4 py-2 rounded-full active:bg-primary"
             :disabled="!payment">
             Pay
           </button>

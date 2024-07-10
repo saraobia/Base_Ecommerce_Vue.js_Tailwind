@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { ref, onMounted, onUnmounted, watch, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCart } from '@/composable/cart';
 
@@ -13,6 +13,13 @@ const name = localStorage.getItem('name');
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value;
 };
+
+
+watchEffect(() => {
+  // Questo si attiverà ogni volta che la rotta cambia
+  router.currentRoute.value; // Accedi alla rotta corrente per attivare la reattività
+  isDropdownOpen.value = false;
+});
 
 const confirmLogout = () => {
   const cartCount = localStorage.getItem('cartCount')
@@ -30,7 +37,6 @@ const cancelLogout = () => {
 const exitAndRemoveData = async () => {
   const currentIdCart = localStorage.getItem('idCart');
   const currentIdClient = localStorage.getItem('idClient');
-  console.log(currentIdCart, currentIdClient);
   await removeCart(currentIdCart, currentIdClient);
 
   // REMOVE LOCAL STORAGE DETAIL
@@ -41,23 +47,15 @@ const exitAndRemoveData = async () => {
   router.push({ name: 'login' });
 };
 
-const handleClickOutside = (event) => {
-  if (isDropdownOpen.value) {
-    const dropdownButton = document.querySelector('.dropdown-button');
-    if (dropdownButton && !dropdownButton.contains(event.target)) {
-      isDropdownOpen.value = false;
-    }
-  }
-};
+
+
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
   updateCartCount();
   window.addEventListener('storage', updateCartCount);
 });
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
   window.removeEventListener('storage', updateCartCount);
 });
 // MANAGE LOCAL STORAGE CHANGE
@@ -87,19 +85,38 @@ watch(() => localStorage.getItem('cartCount'), updateCartCount);
           </li>
         </RouterLink>
         <li class="px-2">
-          <button @click="toggleDropdown" class="dropdown-button flex items-center">
-            <font-awesome-icon :icon="['fas', 'user']" class="px-2" />
-          </button>
-          <div v-if="isDropdownOpen" class="fixed inset-0 flex items-center justify-center z-50">
-            <ul class="bg-card flex flex-col items-center justify-center w-full h-full p-4 text-sm text-darkGray">
-              <li class="font-black text-primary mb-2"> {{ name }}</li>
-              <li class="p-2 cursor-pointer hover:bg-hoverLight hover:rounded-md">
+
+          <!-- DROPDOWN ICON -->
+          <div class=" w-8">
+            <button @click="toggleDropdown" class="dropdown-button flex items-center">
+              <font-awesome-icon :icon="isDropdownOpen ? ['fas', 'times'] : ['fas', 'user']"
+                class="px-3 z-50 right-5 absolute" />
+            </button>
+          </div>
+          <!-- CONTENTS DROPDOWN -->
+          <div v-if="isDropdownOpen" class="fixed inset-0 flex items-center justify-center z-40">
+            <ul
+              class="bg-card flex flex-col items-center justify-center w-full h-full p-4 text-sm text-tDarkGray font-semibold">
+
+              <li class="font-black text-lg text-primary mb-6 w-full  py-2 flex flex-col items-center justify-center">
+                <div
+                  class="flex items-center bg-hoverLight justify-center h-16 w-16 rounded-full shadow-inner-strong mx-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#27C499" class="h-8 w-8 ">
+                    <path fill-rule="evenodd"
+                      d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
+                      clip-rule="evenodd" />
+                  </svg>
+                </div>
+                Welcome {{ name }}
+              </li>
+
+              <li class="w-36 px-4  py-2 mb-2 shadow-inner-strong cursor-pointer hover:bg-primary rounded-lg">
                 <RouterLink name="orders-history" to="/orders-history">My Orders</RouterLink>
               </li>
-              <li class="p-2 cursor-pointer hover:bg-hoverLight hover:rounded-md">
+              <li class="w-36 px-4  py-2 mb-2 shadow-inner-strong cursor-pointer hover:bg-primary rounded-lg">
                 <RouterLink name="home" to="/home">Back to home</RouterLink>
               </li>
-              <li class="p-2 cursor-pointer hover:bg-hoverLight hover:rounded-md">
+              <li class="w-36 px-4  py-2 mb-2 shadow-inner-strong cursor-pointer hover:bg-primary rounded-lg">
                 <button @click="confirmLogout">Logout</button>
               </li>
             </ul>

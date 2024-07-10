@@ -73,12 +73,22 @@ onMounted(fetchCartItems);
     </div>
   </div>
 
-  <div class="text-white py-24 ">
+  <!-- CONTAINER -->
+  <div class="text-white py-24 min-h-full flex flex-col justify-center items-center ">
     <div class="flex flex-col justify-center items-center">
+      <!-- TITLE -->
       <h1 class="text-2xl font-bold mb-4">Your Cart</h1>
+
       <!-- NO CART FOR CLIENT -->
-      <div v-if="isCartEmpty" class="text-center">
-        <p>Your cart is empty.</p>
+      <div v-if="isCartEmpty">
+        <div class="bg-card p-20 rounded-lg flex flex-col items-center">
+          <p class="text-tDarkGray text-sm">We are sorry but Your cart is empty </p>
+          <button @click="router.push('/home')"
+            class="mt-4 font-bold text-sm bg-primary text-white px-4 py-3 rounded-full hover:shadow-inner-strong">
+            Back to the articles
+          </button>
+        </div>
+
       </div>
 
       <!-- ITEMS CART -->
@@ -118,6 +128,7 @@ onMounted(fetchCartItems);
           </button>
         </div>
       </div>
+
     </div>
   </div>
 </template>

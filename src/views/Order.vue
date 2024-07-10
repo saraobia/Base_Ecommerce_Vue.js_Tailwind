@@ -18,6 +18,8 @@ const accessToken = localStorage.getItem('accessToken');
 
 const order = ref(null);
 
+const showButtons = ref(true);
+
 // CONTENTS TO SHOW
 const showMessageForAnnulled = ref(false);
 const annulledMessage = ref('');
@@ -105,11 +107,11 @@ const cancelOrder = async () => {
   }
 }
 
-//CONFIRM AND PAY
+// CONFIRM ORDER ANH HIDE BTNS
 const confirmOrder = () => {
   showPaymentForm.value = true;
+  showButtons.value = false;
 }
-
 onMounted(fetchOrder);
 </script>
 
@@ -123,49 +125,56 @@ onMounted(fetchOrder);
   </div>
 
   <div v-if="isContentVisible">
-    <div class="py-20 flex flex-col items-center justify-center text-white">
-      <div class="bg-card p-10 rounded-xl w-80 bigSmartphone:w-96 tablet:w-112 laptop:w-128">
+    <!-- CARD ORDER-->
+    <div class="py-20 flex flex-col items-center justify-center text-white min-h-full">
+      <div class="bg-card p-10 rounded-xl w-88 bigSmartphone:w-96 tablet:w-112 laptop:w-128">
         <div v-if="isLoading">
           <p>Loading...</p>
         </div>
         <div v-else>
           <div v-if="!showMessageForAnnulled">
             <div v-if="order">
-              <h2 class="text-2xl font-extrabold mb-4 text-primary">Order Summary</h2>
-              <!-- ORDER-->
-              <div class="flex flex-col justify-center mb-4">
-                <p><strong>Order n°:</strong> {{ order.idOrder }}</p>
-                <p class="text-xs"><strong>Date:</strong> {{ formattedOrderDate }}</p>
+              <div class="flex flex-col justify-center mb-10">
+                <p class="mb-1 text-2xl"><strong>Order n°:</strong> {{ order.idOrder }}</p>
+                <p class="text-tDarkGray text-xs"><strong>Date:</strong> {{ formattedOrderDate }}</p>
               </div>
+
               <!-- CLIENT-->
-              <div class="flex flex-col mb-4">
-                <h6 class="font-bold">Your data:</h6>
-                <p class="text-xs"><strong>Client:</strong> {{ order.client.name }} {{ order.client.surname }}</p>
-                <p class="text-xs"><strong>Email:</strong> {{ order.client.email }}</p>
+              <div class="flex flex-col mb-10">
+                <h6 class="font-bold mb-2">Your data:</h6>
+                <p class="text-xs mb-1 text-tDarkGray"><strong>Client:</strong> {{ order.client.name }} {{
+    order.client.surname }}</p>
+                <p class="text-xs text-tDarkGray"><strong>Email:</strong> {{ order.client.email }}</p>
               </div>
               <!-- ORDER DETAILS -->
-              <div class="mt-10">
+              <div>
                 <h3 class="text-lg font-semibold mb-2">Order Details</h3>
                 <div v-for="item in order.orderDetail.orderDetailArticles" :key="item.id">
                   <div class="flex flex-col justify-between  mb-2">
-                    <p class="text-xs">{{ item.article.nameArticle }}</p>
-                    <p class="text-xs">Quantity: {{ item.quantity }}</p>
-                    <p class="text-xs">Price: ${{ item.article.price }}</p>
+                    <p class="text-xs font-bold text-tGray mb-1">{{ item.article.name }}</p>
+                    <p class="text-xs text-tDarkGray mb-1">Quantity: {{ item.quantity }}</p>
+                    <p class="text-xs text-tDarkGray">Price: ${{ item.article.price }}</p>
                   </div>
                 </div>
                 <p class="text-md font-semibold mt-4 text-right">Total Price:</p>
-                <p class="text-right font-black">${{ order.orderDetail.totalPrice }}</p>
+                <p class="text-right font-black mb-6">${{ order.orderDetail.totalPrice }}</p>
               </div>
-              <div class="mt-10 flex justify-between">
+
+              <div v-if="showButtons" class=" flex justify-between w-full">
+                <!-- BUTTONS -->
                 <button @click="cancelOrder()"
-                  class="font-bold text-sm bg-danger text-white px-4 py-2 rounded-xl hover:shadow-inner-strong">
+                  class="font-bold text-sm bg-danger text-white px-4 py-2 rounded-full hover:shadow-inner-strong">
                   Cancel
                 </button>
                 <button @click="confirmOrder()"
-                  class="font-bold text-sm bg-primary text-white px-4 py-2 rounded-xl hover:shadow-inner-strong">
+                  class="font-bold text-sm bg-primary text-white px-4 py-2 rounded-full hover:shadow-inner-strong">
                   Confirm
                 </button>
+
+
               </div>
+
+              <!-- PAYMENT -->
               <div v-if="showPaymentForm">
                 <PaymentForm :idOrder="order.idOrder" :isLoading="isLoading" @orderCompleted="showOrderCompletedMessage"
                   @orderError="showOrderErrorMessage" />
@@ -182,21 +191,24 @@ onMounted(fetchOrder);
           </div>
 
           <div v-else>
-            <h2 class=" text-2xl font-extrabold mb-4 text-primary">Order status</h2>
-            <p class="text-lg">{{ annulledMessage }}</p>
-            <button @click="router.push('/home')"
-              class="mt-4 font-bold text-sm bg-primary text-white px-4 py-2 rounded-xl hover:shadow-inner-strong">
-              Back to the articles
-            </button>
+            <h2 class="text-2xl font-extrabold mb-1 text-white">Order status</h2>
+            <p class="text-sm text-tDarkGray">{{ annulledMessage }}</p>
+            <div class="flex w-full justify-end items-end">
+              <button @click="router.push('/home')"
+                class="mt-4 font-bold text-sm bg-primary text-white px-4 py-2 rounded-full hover:shadow-inner-strong">
+                Back to the articles
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- LOADING AFTER PAYMENT -->
   <div v-else-if="isLoading" class="h-screen flex items-center justify-center">
     <div class="text-center flex items-center justify-center">
-      <svg class="h-8 w-8" viewBox="0 0 24 24">
+      <svg class="h-12 w-12" viewBox="0 0 24 24">
         <circle class="animate-pulse" cx="12" cy="12" r="10" stroke="#6aebc8" stroke-width="4" fill="#27C499">
         </circle>
       </svg>
@@ -204,17 +216,18 @@ onMounted(fetchOrder);
     </div>
   </div>
 
-  <div v-else-if="showMessageOrderCompleted" class="h-full flex items-center justify-center">
+  <!-- MESSAGE OPERATION COMPLETED -->
+  <div v-else-if="showMessageOrderCompleted" class=" min-h-full flex items-center justify-center">
     <div class="p-20 bg-card flex flex-col items-center justify-center rounded-xl">
-      <p class="text-lg font-medium text-tGray">{{ orderMessage }}</p>
+      <p class="text-lg  text-tDarkGray">{{ orderMessage }}</p>
       <div class="">
         <button @click="router.push('/home')"
-          class=" bg-card shadow-inner-strong mx-2  mt-4 font-bold text-sm  text-primary px-4 py-2 rounded-xl hover:shadow-inner-strong">
+          class="bg-card shadow-inner-strong mx-2  mt-4  text-sm font-bold text-white px-5 py-3 rounded-full hover:shadow-inner-strong hover:bg-primary">
           Back to the articles
         </button>
 
         <button @click="router.push('/orders-history')"
-          class="mx-2 mt-4 font-bold text-sm bg-primary text-white px-4 py-2 rounded-xl hover:shadow-inner-strong">
+          class="mx-2 mt-4 font-bold text-sm bg-primary text-white px-5 py-3 rounded-full hover:shadow-inner-strong">
           View orders
         </button>
       </div>
